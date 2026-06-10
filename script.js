@@ -151,3 +151,7 @@ taskInput.addEventListener('keypress', function(e) {
 
 // Load tasks from localStorage and display them when the page first loads
 loadTasks();
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+}
