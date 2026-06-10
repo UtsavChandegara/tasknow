@@ -5,24 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TaskNow</title>
     <link rel="stylesheet" href="style.css">
-    
 </head>
 <body>
     <header>
         <h1>TaskNow</h1>
     </header>
-    <main>
-        <section id="input">
-            <input type="text" placeholder="Write your task..." id="input_field">
-            <button id="add_tasks">Add Task</button>
-        </section>
-        <section id="active">
-            <ul id="active_tasks"></ul>
-        </section>
-        <section id="completed">
-            <ul id="completed_tasks"></ul>
-        </section>
-    </main>
+
+    <section id="input">
+        <input type="text" id="input_field" placeholder="Add a new task...">
+        <button id="add_button">Add Task</button>
+    </section>
+
+    <section id="active">
+        <h2>This Week</h2>
+        <ul id="active_tasks"></ul>
+    </section>
+    
+    <section id="completed">
+        <h2>Last Week</h2>
+        <ul id="completed_tasks"></ul>
+    </section>
+
     <script src="script.js"></script>
 </body>
 </html>

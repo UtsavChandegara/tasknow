@@ -1,9 +1,10 @@
 const taskInput = document.getElementById('input_field');
-const addTaskBtn = document.getElementById('add_tasks');
+const addTaskBtn = document.getElementById('add_button');
 const activeTasksList = document.getElementById('active_tasks');
 const completedTasksList = document.getElementById('completed_tasks');
 
 let tasks = [];
+let archivedTasks = [];
 
 function renderTasks() {
     // Clear both lists to prevent re-adding old items
@@ -41,6 +42,24 @@ function renderTasks() {
         }
         // All tasks are rendered in the active list as per spec
         activeTasksList.appendChild(listItem);
+    });
+
+    // Render archived tasks into the completed list
+    archivedTasks.forEach(task => {
+        const listItem = document.createElement('li');
+        listItem.dataset.id = task.id;
+        listItem.classList.add('task-completed');
+
+        const textNode = document.createTextNode(`${task.text} `);
+        listItem.appendChild(textNode);
+
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'task-meta';
+        let metaText = `Completed: ${task.completedAt}`;
+        if (task.note) { metaText += ` | Note: ${task.note}`; }
+        metaDiv.textContent = metaText;
+        listItem.appendChild(metaDiv);
+        completedTasksList.appendChild(listItem);
     });
 }
 
@@ -83,11 +102,43 @@ function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
+function getWeekNumber(d) {
+    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    return weekNo;
+}
+
+function checkWeeklyReset() {
+    const currentWeek = getWeekNumber(new Date());
+    const lastKnownWeek = localStorage.getItem('lastKnownWeek');
+
+    if (!lastKnownWeek) {
+        localStorage.setItem('lastKnownWeek', currentWeek);
+        return;
+    }
+
+    if (parseInt(lastKnownWeek) !== currentWeek) {
+        const completedThisWeek = tasks.filter(task => task.completed);
+        tasks = tasks.filter(task => !task.completed);
+
+        archivedTasks.push(...completedThisWeek);
+        localStorage.setItem('archivedTasks', JSON.stringify(archivedTasks));
+
+        saveTasks(); // Saves the newly filtered active tasks
+        localStorage.setItem('lastKnownWeek', currentWeek);
+    }
+}
+
 function loadTasks() {
     const savedTasks = localStorage.getItem('tasks');
-    if (savedTasks) {
-        tasks = JSON.parse(savedTasks);
-    }
+    const savedArchived = localStorage.getItem('archivedTasks');
+
+    if (savedTasks) { tasks = JSON.parse(savedTasks); }
+    if (savedArchived) { archivedTasks = JSON.parse(savedArchived); }
+    
+    checkWeeklyReset();
     renderTasks();
 }
 

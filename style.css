@@ -20,6 +20,12 @@ header{
     margin-bottom: 20px;
 }
 
+h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
 input {
     flex: 1;
     padding: 10px;
