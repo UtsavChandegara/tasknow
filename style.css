@@ -56,3 +56,8 @@ li{
     justify-content: space-between;
     align-items: center;
 }
+
+.task-completed {
+    opacity: 0.5;
+    text-decoration: line-through;
+}

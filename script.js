@@ -12,15 +12,35 @@ function renderTasks() {
 
     tasks.forEach(task => {
         const listItem = document.createElement('li');
-        listItem.textContent = task.text;
-        // Add the task's unique ID to the element for future reference
         listItem.dataset.id = task.id;
 
+        // Display task text and creation date
+        const textNode = document.createTextNode(`${task.text} `);
+        listItem.appendChild(textNode);
+
+        const createdAtSpan = document.createElement('small');
+        createdAtSpan.textContent = `(Created: ${task.createdAt})`;
+        listItem.appendChild(createdAtSpan);
+
         if (task.completed) {
-            completedTasksList.appendChild(listItem);
+            listItem.classList.add('task-completed');
+            const metaDiv = document.createElement('div');
+            metaDiv.className = 'task-meta';
+            let metaText = `Completed: ${task.completedAt}`;
+            if (task.note) {
+                metaText += ` | Note: ${task.note}`;
+            }
+            metaDiv.textContent = metaText;
+            listItem.appendChild(metaDiv);
         } else {
-            activeTasksList.appendChild(listItem);
+            // Add "Done" button for active tasks
+            const doneButton = document.createElement('button');
+            doneButton.textContent = 'Done';
+            doneButton.addEventListener('click', () => completeTask(task.id));
+            listItem.appendChild(doneButton);
         }
+        // All tasks are rendered in the active list as per spec
+        activeTasksList.appendChild(listItem);
     });
 }
 
@@ -43,6 +63,20 @@ function addTask() {
     saveTasks();
     renderTasks();
     taskInput.value = '';
+}
+
+function completeTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+
+    const note = prompt("How did it go? (optional)");
+
+    task.completed = true;
+    task.completedAt = new Date().toLocaleString();
+    task.note = note;
+
+    saveTasks();
+    renderTasks();
 }
 
 function saveTasks() {
